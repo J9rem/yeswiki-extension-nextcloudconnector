@@ -5,35 +5,37 @@ actions:
     title: _t(AB_attach_commons_title)
     width: 40%
     showif:
-      filetype: ^(image|pdf)$
+      filetype: ^(image|svg|pdf)$
     properties:
       link:
         label: _t(AB_attach_link_label)
         default: https://
         type: url
         showif:
-          filetype: image
+          filetype: ^(image|svg)$
       caption:
         label: _t(AB_attach_caption_label)
         type: text
         showif:
-          filetype: image
+          filetype: ^(image|svg)$
       legend:
         label: _t(AB_attach_legend_label)
         type: text
         showif:
-          filetype: image
+          filetype: ^(image|svg)$
       nofullimagelink:
         label: _t(AB_attach_nofullimagelink_label)
         type: list
         options:
           0: _t(AB_attach_yes)
           1: _t(AB_attach_no)
+        showif:
+          filetype: ^(image|svg)$
       size:
         label: _t(AB_attach_size_label)
         type: list
         showif:
-          filetype: image
+          filetype: ^(image|svg)$
         options:
           small: _t(AB_attach_size_small)
           medium: _t(AB_attach_size_medium)
@@ -44,13 +46,13 @@ actions:
         type: number
         advanced: true
         showif:
-          filetype: image
+          filetype: ^(image|svg)$
       height:
         label: _t(AB_attach_height_label)
         type: number
         advanced: true
         showif:
-          filetype: image
+          filetype: ^(image|svg)$
       class:
         label: _t(AB_attach_class_label)
         type: class
@@ -59,7 +61,7 @@ actions:
             label: _t(AB_attach_class_position_label)
             type: list
             showif:
-              filetype: ^(image|pdf)$
+              filetype: ^(image|svg|pdf)$
             options:
               '': _t(AB_attach_class_position_none)
               left: _t(AB_attach_class_position_left)
@@ -72,7 +74,7 @@ actions:
             options: 
               lightshadow: _t(YES)
             showif:
-              filetype: ^(image|pdf)$
+              filetype: ^(image|svg)$
           whiteborder:
             label: _t(AB_attach_class_effect_whiteborder)
             type: list
@@ -80,7 +82,7 @@ actions:
             options: 
               whiteborder: _t(YES)
             showif:
-              filetype: ^(image|pdf)$
+              filetype: ^(image|svg)$
           zoom:
             label: _t(AB_attach_class_effect_zoom)
             type: list
@@ -88,14 +90,14 @@ actions:
             options: 
               zoom: _t(YES)
             showif:
-              filetype: ^(image|pdf)$
+              filetype: ^(image|svg)$
           izmir:
             label: _t(AB_attach_class_izmir_label)
             type: list
             advanced: true
             hint: _t(AB_attach_class_izmir_hint)
             showif:
-              filetype: 'image'
+              filetype: ^(image)$
             options:
               c4-izmir: _t(AB_attach_class_izmir_izmir)
               c4-izmir c4-border-cc-3: _t(AB_attach_class_izmir_border)
@@ -121,6 +123,7 @@ actions:
         options:
           '': _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_GENERAL)
           image: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE)
+          svg: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG)
           pdf: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF)
       desc:
         label: _t(AB_attach_desc_label)
