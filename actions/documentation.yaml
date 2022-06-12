@@ -1,0 +1,162 @@
+label: "Nextcloud connector"
+previewHeight: 400px
+actions:
+  commons:
+    title: _t(AB_attach_commons_title)
+    width: 40%
+    showif:
+      filetype: ^(image|pdf)$
+    properties:
+      link:
+        label: _t(AB_attach_link_label)
+        default: https://
+        type: url
+        showif:
+          filetype: image
+      caption:
+        label: _t(AB_attach_caption_label)
+        type: text
+        showif:
+          filetype: image
+      legend:
+        label: _t(AB_attach_legend_label)
+        type: text
+        showif:
+          filetype: image
+      nofullimagelink:
+        label: _t(AB_attach_nofullimagelink_label)
+        type: list
+        options:
+          0: _t(AB_attach_yes)
+          1: _t(AB_attach_no)
+      size:
+        label: _t(AB_attach_size_label)
+        type: list
+        showif:
+          filetype: image
+        options:
+          small: _t(AB_attach_size_small)
+          medium: _t(AB_attach_size_medium)
+          big: _t(AB_attach_size_big)
+          original: _t(AB_attach_size_original)
+      width: 
+        label: _t(AB_attach_width_label)
+        type: number
+        advanced: true
+        showif:
+          filetype: image
+      height:
+        label: _t(AB_attach_height_label)
+        type: number
+        advanced: true
+        showif:
+          filetype: image
+      class:
+        label: _t(AB_attach_class_label)
+        type: class
+        subproperties:
+          position:
+            label: _t(AB_attach_class_position_label)
+            type: list
+            showif:
+              filetype: ^(image|pdf)$
+            options:
+              '': _t(AB_attach_class_position_none)
+              left: _t(AB_attach_class_position_left)
+              center: _t(AB_attach_class_position_center)
+              right: _t(AB_attach_class_position_right)
+          lightshadow:
+            label: _t(AB_attach_class_effect_lightshadow)
+            type: list
+            default: ''
+            options: 
+              lightshadow: _t(YES)
+            showif:
+              filetype: ^(image|pdf)$
+          whiteborder:
+            label: _t(AB_attach_class_effect_whiteborder)
+            type: list
+            default: ''
+            options: 
+              whiteborder: _t(YES)
+            showif:
+              filetype: ^(image|pdf)$
+          zoom:
+            label: _t(AB_attach_class_effect_zoom)
+            type: list
+            default: ''
+            options: 
+              zoom: _t(YES)
+            showif:
+              filetype: ^(image|pdf)$
+          izmir:
+            label: _t(AB_attach_class_izmir_label)
+            type: list
+            advanced: true
+            hint: _t(AB_attach_class_izmir_hint)
+            showif:
+              filetype: 'image'
+            options:
+              c4-izmir: _t(AB_attach_class_izmir_izmir)
+              c4-izmir c4-border-cc-3: _t(AB_attach_class_izmir_border)
+              c4-izmir c4-image-zoom-in: _t(AB_attach_class_izmir_zoom)
+              c4-izmir c4-reveal-up: _t(AB_attach_class_izmir_revealup)
+              c4-izmir c4-gradient-top: _t(AB_attach_class_izmir_gradiant)
+              C4-izmir c4-layout-top-center: _t(AB_attach_class_izmir_topcentertext)
+  nextcloudconnectorattach:
+    width: 40%
+    title: _t(AB_attach_attach_title)
+    label: NextcloudConnectorAttach
+    description: _t(AB_attach_attach_description)
+    properties:
+      fileurl:
+        label: _t(AB_attach_file_label)
+        type: url    
+        hint: _t(AB_NEXTCLOUDCONNECTOR_FILE_HINT)
+      filetype:
+        label: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_LABEL)
+        type: list
+        required: true
+        default: ''
+        options:
+          '': _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_GENERAL)
+          image: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE)
+          pdf: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF)
+      desc:
+        label: _t(AB_attach_desc_label)
+        type: text
+      displaypdf:
+        label: _t(AB_attach_displaypdf_label)
+        type: list
+        default: ''
+        showif:
+          filetype: pdf
+        options:
+          1: _t(AB_attach_yes)
+          0: _t(AB_attach_no)
+      ratio:
+        label: _t(AB_attach_pdf_ratio_label)
+        type: list
+        advanced: true
+        showif:
+          displaypdf: 1
+          filetype: pdf
+        default: ''
+        options:
+          portrait: _t(AB_attach_pdf_ratio_option_portrait)
+          paysage: _t(AB_attach_pdf_ratio_option_paysage)
+          carre: _t(AB_attach_pdf_ratio_option_carre)
+      largeurmax:
+        label: _t(AB_attach_pdf_largeur_max_label)
+        type: number
+        advanced: true
+        showif:
+          displaypdf: 1
+          filetype: pdf
+      hauteurmax:
+        label: _t(AB_attach_pdf_hauteur_max_label)
+        type: number
+        advanced: true
+        showif:
+          displaypdf: 1
+          filetype: pdf
