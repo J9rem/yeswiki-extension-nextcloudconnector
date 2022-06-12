@@ -1,7 +1,7 @@
 # yeswiki-extension-nextcloudconnector
 
  - [English](#english)
- - [Français](#francais)
+ - [Français](#français)
 
 ## English
 
@@ -46,7 +46,7 @@ Extension [YesWiki](https://yeswiki.net/) pour synchroniser des fichiers depuis 
 
 Dans la page `GererMisesAJour` de votre YesWiki, recherchez l'extension `Nextcloud Connector` et installez-là.
 
-##" Configuration
+### Configuration
 
  1. Se connecter à la session Nextcloud avec le compte concerné, via l'interface web.
  2. Se rendre dans l'interface web Nextcloud dans `Paramètres` > Onglet/Menu `Sécurité`

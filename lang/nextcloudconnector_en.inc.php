@@ -14,4 +14,12 @@ return [
     'EDIT_CONFIG_HINT_NEXTCLOUDCONNECTOR[SERVERNAME]' => 'Nextcloud server\'s url',
     'EDIT_CONFIG_HINT_NEXTCLOUDCONNECTOR[USERNAME]' => 'Username',
     'EDIT_CONFIG_HINT_NEXTCLOUDCONNECTOR[APPLICATIONPASSWORD]' => 'Application password',
+
+    // actions/documentation.yaml
+    'AB_NEXTCLOUDCONNECTOR_FILE_HINT' => 'Give intenal file url. Ex. : https://example.org/nextcloud/f/18455 or https://example.org/nextcloud/apps/onlyoffice/18455 or https://nextcloud.example.org/apps/files/?dir=/my-folder&openfile=18455',
+    'AB_NEXTCLOUDCONNECTOR_FILETYPE_LABEL' => 'File type',
+    'AB_NEXTCLOUDCONNECTOR_FILETYPE_GENERAL' => 'General',
+    'AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE' => 'Image (except svg)',
+    'AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG' => 'SVG',
+    'AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF' => 'PDF',
 ];
