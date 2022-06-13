@@ -125,6 +125,17 @@ actions:
           image: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE)
           svg: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG)
           pdf: _t(AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF)
+      refreshtime:
+        label: _t(AB_NEXTCLOUDCONNECTOR_REFRESHTIME_LABEL)
+        type: list
+        required: true
+        default: '3600'
+        options:
+          60: _t(AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MINUTE)
+          1800: _t(AB_NEXTCLOUDCONNECTOR_REFRESHTIME_HALF_AN_HOUR)
+          3600: _t(AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_HOUR)
+          86400: _t(AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_DAY)
+          2592000: _t(AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MONTH)
       desc:
         label: _t(AB_attach_desc_label)
         type: text

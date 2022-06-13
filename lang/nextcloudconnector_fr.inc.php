@@ -22,6 +22,12 @@ return [
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE' => 'Image (sauf svg)',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG' => 'SVG',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF' => 'PDF',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_LABEL' => 'Temps de rafraîchissement de la copie locale',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MINUTE' => 'Une minute',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_HALF_AN_HOUR' => 'Une demi-heure',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_HOUR' => 'Une heure',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_DAY' => 'Un jour',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MONTH' => 'Un mois',
 
     // services/NextcloudConnectorService.php
     'NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG' => 'Le paramètre "nextcloudconnector[\'servername\']" est mal configuré dans "wakka.config.php" et devrait être une url.',

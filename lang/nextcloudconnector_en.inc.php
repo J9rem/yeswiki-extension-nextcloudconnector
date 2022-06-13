@@ -22,7 +22,16 @@ return [
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE' => 'Image (except svg)',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG' => 'SVG',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF' => 'PDF',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_LABEL' => 'Refresh time for local copy',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MINUTE' => 'One minute',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_HALF_AN_HOUR' => 'Half an hour',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_HOUR' => 'An hour',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_DAY' => 'A day',
+    'AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MONTH' => 'A month',
 
     // services/NextcloudConnectorService.php
-    'NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG' => 'The "nextcloudconnector[\'servername\']" param is badly set in "wakka.config.php" and should be an url.'
+    'NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG' => 'The "nextcloudconnector[\'servername\']" param is badly set in "wakka.config.php" and should be an url.',
+    'NEXTCLOUDCONNECTOR_BAD_FILEURL' => 'The parameter "fileurl" of "nextcloudconnectorattach" action does not correspond to address of file from nextcloud server.',
+    'NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO' => 'It has not been possible to extract information associated to file %{fileId} !',
+    'NEXTCLOUDCONNECTOR_NOT_POSSIBLE_TO_UPDATE_FILE' => 'It has not been possible to update file %{fileUrl} !',
 ];
