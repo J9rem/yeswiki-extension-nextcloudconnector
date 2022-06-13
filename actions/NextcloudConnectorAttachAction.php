@@ -34,7 +34,7 @@ class NextcloudConnectorAttachAction extends YesWikiAction
         $this->nextcloudConnectorService = $this->getservice(NextcloudConnectorService::class);
 
         try {
-            $fileId = $this->nextcloudConnectorService->getIfFromUrl($this->arguments['fileurl']);
+            $fileId = $this->nextcloudConnectorService->getIdFromUrl($this->arguments['fileurl']);
             $fData = $this->nextcloudConnectorService->getFilenameFromId($fileId);
             $this->nextcloudConnectorService->updateFileIfNeeded($fData, $this->arguments['refreshtime']);
 

@@ -49,7 +49,7 @@ class NextcloudConnectorService
      * @return string $fileId
      * @throws NextcloudException
      */
-    public function getIfFromUrl(string $fileurl): string
+    public function getIdFromUrl(string $fileurl): string
     {
         if (empty($this->servername) || !filter_var($this->servername, FILTER_VALIDATE_URL)) {
             throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG'));
@@ -65,13 +65,14 @@ class NextcloudConnectorService
     /**
      * retrieve filename form id using cache
      * @param string $fileId
-     * @return array $fData ['filename'=>$filename,'dirname'=>$dirname]
+     * @param bool $forced
+     * @return array $fData ['filename'=>$filename,'dirname'=>$dirname,'fileId'=>$fileId]
      * @throws NextcloudException
      */
-    public function getFilenameFromId(string $fileId): array
+    public function getFilenameFromId(string $fileId, bool $forced = false): array
     {
         $cachefilename = self::CACHE_FOLDER . "/".self::CACHE_PREFIX."{$this->sanitizeFileName($this->servername)}-$fileId.json";
-        if (file_exists($cachefilename)) {
+        if (!$forced && file_exists($cachefilename)) {
             $fileinfo = json_decode(file_get_contents($cachefilename), true);
             $filename = $fileinfo['filename'] ?? '';
             $dirname = $fileinfo['dirname'] ?? '';
@@ -110,16 +111,17 @@ class NextcloudConnectorService
         if (empty($filename) || empty($dirname)) {
             throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId'=>$fileId]));
         }
-        return ['filename'=>$filename,'dirname'=>$dirname];
+        return ['filename'=>$filename,'dirname'=>$dirname,'fileId'=>$fileId];
     }
 
     /**
      * updateFileIfNeeded
      * @param array $fData
      * @param int $maxAge
+     * @param bool $alreadyForced
      * @throws NextcloudException
      */
-    public function updateFileIfNeeded(array $fData, int $maxAge)
+    public function updateFileIfNeeded(array $fData, int $maxAge, bool $alreadyForced = false)
     {
         $attach = $this->getAttach();
         $files = $attach->fmGetFiles(false);
@@ -159,12 +161,24 @@ class NextcloudConnectorService
             // request($method, $url = '', $body = null, array $headers = [])
             $fileResponse = $sabreWebDavClient->request('GET', $fileUrl);
             if (empty($fileResponse['body']) || empty($fileResponse['statusCode']) || $fileResponse['statusCode'] != 200) {
-                throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_TO_UPDATE_FILE', ['fileUrl' => $fileUrl]));
+                if ($alreadyForced) {
+                    throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_TO_UPDATE_FILE', ['fileUrl' => $fileUrl]));
+                } else {
+                    $fData = $this->getFilenameFromId($fData['fileId'], true);
+                    $this->updateFileIfNeeded($fData, $maxAge, true);
+                    
+                    $attach->file = $fData['filename'];
+                    $fullFileName = $attach->GetFullFilename(true);
+                    if (!file_exists("files/$fullFileName")) {
+                        throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_TO_UPDATE_FILE', ['fileUrl' => $fileUrl]));
+                    }
+                }
+            } else {
+                $fileContent = $fileResponse['body'];
+                $attach->file = $fData['filename'];
+                $fullFileName = $attach->GetFullFilename(true);
+                file_put_contents($fullFileName, $fileContent);
             }
-            $fileContent = $fileResponse['body'];
-            $attach->file = $fData['filename'];
-            $fullFileName = $attach->GetFullFilename(true);
-            file_put_contents($fullFileName, $fileContent);
         }
     }
 
