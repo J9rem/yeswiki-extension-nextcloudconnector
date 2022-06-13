@@ -22,4 +22,7 @@ return [
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE' => 'Image (except svg)',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG' => 'SVG',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF' => 'PDF',
+
+    // services/NextcloudConnectorService.php
+    'NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG' => 'The "nextcloudconnector[\'servername\']" param is badly set in "wakka.config.php" and should be an url.'
 ];

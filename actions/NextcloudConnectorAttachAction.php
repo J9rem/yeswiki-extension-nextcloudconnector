@@ -12,19 +12,42 @@
 namespace YesWiki\NextcloudConnector;
 
 use YesWiki\Core\YesWikiAction;
+use YesWiki\Nextcloudconnector\Exception\NextcloudException;
+use YesWiki\Nextcloudconnector\Service\NextcloudConnectorService;
 
 class NextcloudConnectorAttachAction extends YesWikiAction
 {
+    protected $nextcloudConnectorService;
+
     public function formatArguments($arg)
     {
         return [
             'fileurl' => isset($arg['fileurl']) && is_string($arg['fileurl']) ? $arg['fileurl'] : '',
             'file' => '',
+            'refreshtime' => isset($arg['refreshtime']) && is_scalar($arg['refreshtime']) ? abs(intval($arg['refreshtime'])) : 0,
         ];
     }
 
     public function run()
     {
-        return $this->callAction('attach', $this->arguments);
+        // get services
+        $this->nextcloudConnectorService = $this->getservice(NextcloudConnectorService::class);
+
+        try {
+            $fileId = $this->nextcloudConnectorService->getIfFromUrl($this->arguments['fileurl']);
+            $fData = $this->nextcloudConnectorService->getFilenameFromId($fileId);
+            $this->nextcloudConnectorService->updateFileIfNeeded($fData, $this->arguments['refreshtime']);
+
+            $attachArgs = $this->arguments;
+            unset($attachArgs['fileurl']);
+            unset($attachArgs['refreshtime']);
+            $attachArgs['file'] = $fData['filename'];
+            return $this->callAction('attach', $attachArgs);
+        } catch (NextcloudException $ex) {
+            return $this->render("@templates/alert-message.twig", [
+                'type' => 'danger',
+                'message' => $ex->getMessage(),
+            ]);
+        }
     }
 }

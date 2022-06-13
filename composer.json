@@ -1,0 +1,14 @@
+{
+    "require": {
+        "php": "^7.3 || ^8.0",
+        "sabre/dav": "^4.3"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "7.3.0"
+        },
+        "platform-check": true,
+        "sort-packages": true
+    }
+}

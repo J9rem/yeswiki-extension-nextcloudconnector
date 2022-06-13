@@ -22,4 +22,10 @@ return [
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_IMAGE' => 'Image (sauf svg)',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_SVG' => 'SVG',
     'AB_NEXTCLOUDCONNECTOR_FILETYPE_PDF' => 'PDF',
+
+    // services/NextcloudConnectorService.php
+    'NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG' => 'Le paramètre "nextcloudconnector[\'servername\']" est mal configuré dans "wakka.config.php" et devrait être une url.',
+    'NEXTCLOUDCONNECTOR_BAD_FILEURL' => 'Le paramètre "fileurl" de l\'action "nextcloudconnectorattach" ne correspond à l\'adresse d\'un fichier du serveur nextcloud.',
+    'NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO' => 'Il n\'a pas été possible d\'extraire les informations associées au fichier %{fileId} !',
+    'NEXTCLOUDCONNECTOR_NOT_POSSIBLE_TO_UPDATE_FILE' => 'Il n\'a pas été possible de mettre à jour le fichier %{fileUrl} !',
 ];
