@@ -126,20 +126,30 @@ class NextcloudConnectorService
 
         $foundFiles = [];
 
-        foreach ($files as $key => $fdata) {
-            if (!empty($fdata['name']) && !empty($fdata['ext']) && "{$fdata['name']}.{$fdata['ext']}" == $fData['filename']) {
+        foreach ($files as $key => $filedata) {
+            if (!empty($filedata['name']) && !empty($filedata['ext']) && "{$filedata['name']}.{$filedata['ext']}" == $fData['filename']) {
                 if (empty($fdata['dateupload']) ||
-                    (new DateTime($fdata['dateupload']))
+                    (new DateTime($filedata['dateupload']))
                     ->add(new DateInterval("PT{$maxAge}S"))
                     ->diff(new DateTime())
                     ->invert == 0
                     ) {
-                    $attach->fmDelete($fdata['realname']);
-                    if (file_exists("files/{$fdata['realname']}")) {
-                        unlink("files/{$fdata['realname']}");
+                    $attach->fmDelete($filedata['realname']);
+                    $updatedFiles = $attach->fmGetFiles(true);
+                    foreach ($updatedFiles as $newFData) {
+                        if (
+                            !empty($newFData['name']) &&
+                            !empty($newFData['ext']) &&
+                            $newFData['name'] == $filedata['name'] &&
+                            $newFData['ext'] == $filedata['ext'] &&
+                            !empty($newFData['trashdate'])) {
+                            if (file_exists("files/{$newFData['realname']}")) {
+                                unlink("files/{$newFData['realname']}");
+                            }
+                        }
                     }
                 } else {
-                    $foundFiles[] = $fdata;
+                    $foundFiles[] = $filedata;
                 }
             }
         }
