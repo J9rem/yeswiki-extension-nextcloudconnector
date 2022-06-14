@@ -101,11 +101,11 @@ class NextcloudConnectorService
                     $location = substr($line, strlen("Location: "));
                 }
             }
-            if (!preg_match("/^\/apps\/files\/\?dir=([^&]+)&openfile=$fileId&scrollto=(.+)\s*$/", $location, $matches)) {
-                throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId'=>$fileId]));
+            if (!preg_match("/^\/apps\/files\/\?dir=([^&]+)(?:&openfile=$fileId)?&scrollto=([^&]+)(?:&openfile=$fileId)?\s*$/", $location, $matches)) {
+                throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId'=>"$fileId"]));
             }
-            $filename = preg_replace("/\s*$/", "", $matches[2]);
-            $dirname = $matches[1];
+            $filename = urldecode(preg_replace("/\s*$/", "", $matches[2]));
+            $dirname = urldecode($matches[1]);
             file_put_contents($cachefilename, json_encode(['filename'=>$filename,'dirname'=>$dirname]));
         }
         if (empty($filename) || empty($dirname)) {
