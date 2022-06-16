@@ -119,9 +119,10 @@ class NextcloudConnectorService
      * @param array $fData
      * @param int $maxAge
      * @param bool $alreadyForced
+     * @return string $fullFileName
      * @throws NextcloudException
      */
-    public function updateFileIfNeeded(array $fData, int $maxAge, bool $alreadyForced = false)
+    public function updateFileIfNeeded(array $fData, int $maxAge, bool $alreadyForced = false): string
     {
         $attach = $this->getAttach();
         $files = $attach->fmGetFiles(false);
@@ -129,8 +130,8 @@ class NextcloudConnectorService
         $foundFiles = [];
 
         foreach ($files as $key => $filedata) {
-            if (!empty($filedata['name']) && !empty($filedata['ext']) && "{$filedata['name']}.{$filedata['ext']}" == $fData['filename']) {
-                if (empty($fdata['dateupload']) ||
+            if (!empty($filedata['name']) && !empty($filedata['ext']) && $attach->sanitizeFilename("{$filedata['name']}.{$filedata['ext']}") == $attach->sanitizeFilename($fData['filename'])) {
+                if (empty($filedata['dateupload']) ||
                     (new DateTime($filedata['dateupload']))
                     ->add(new DateInterval("PT{$maxAge}S"))
                     ->diff(new DateTime())
@@ -179,7 +180,9 @@ class NextcloudConnectorService
                 $fullFileName = $attach->GetFullFilename(true);
                 file_put_contents($fullFileName, $fileContent);
             }
+            return preg_replace("/^".preg_quote($attach->GetUploadPath(), "/")."\//", "", $fullFileName);
         }
+        return $foundFiles[0]['realname'];
     }
 
     /**

@@ -34,4 +34,10 @@ return [
     'NEXTCLOUDCONNECTOR_BAD_FILEURL' => 'Le paramètre "fileurl" de l\'action "nextcloudconnectorattach" ne correspond à l\'adresse d\'un fichier du serveur nextcloud.',
     'NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO' => 'Il n\'a pas été possible d\'extraire les informations associées au fichier %{fileId} !',
     'NEXTCLOUDCONNECTOR_NOT_POSSIBLE_TO_UPDATE_FILE' => 'Il n\'a pas été possible de mettre à jour le fichier %{fileUrl} !',
+
+    // templates/bazar/inputs/file-nextcloud-connector.twig
+    'NEXTCLOUDCONNECTOR_FILE_INPUT' => 'Fichier local',
+    'NEXTCLOUDCONNECTOR_NEXTCLOUD_INPUT' => 'Fichier sur un Nextcloud',
+    'NEXTCLOUDCONNECTOR_NEXTCLOUD_URL_PLACEHOLDER' => 'Fournir l\'url interne du fichier.',
+    'NEXTCLOUDCONNECTOR_NEXTCLOUD_REFRESH_TIME' => 'Temps de rafraîchissement',
 ];

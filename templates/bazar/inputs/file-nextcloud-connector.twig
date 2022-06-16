@@ -1,0 +1,98 @@
+{# # This file is part of the YesWiki Extension nextcloudconnector.
+# Authors : see README.md file that was distributed with this source code.
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code. #}
+
+{% extends "@bazar/layouts/input.twig" %}
+
+{% block input %}
+    <div class="input-group">
+        {% if value %}
+            <a href="{{ fileUrl }}" target="_blank" download="{{ shortFileName }}">{{ shortFileName }}</a>
+            &nbsp;-&nbsp;            
+            {% if isAllowedToDeleteFile %}
+                <a href="{{ deleteUrl }}" 
+                   onClick="javascript:return confirm('{{ _t('BAZ_CONFIRMATION_SUPPRESSION_FICHIER') }}');">
+                    {{- _t('BAZ_SUPPRIMER') -}}
+                </a>            
+            {% else %}            
+                <button class="btn btn-sm btn-danger" disabled="disabled"
+                    data-toggle="tooltip" data-placement="bottom" title="{{ _t('BAZ_DROIT_INSUFFISANT') }}">
+                    <i class="fa fa-trash"></i>
+                    {{ _t('BAZ_SUPPRIMER') }}
+                </button>
+            {% endif %}
+            <br />
+            <input
+                type="hidden"
+                name="{{ field.propertyName }}"
+                value="{{ value }}"
+            />
+        {% else %}
+            {# choice for nextcloudLink #}
+            {{ nextcloudLink }}
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation"{% if nextcloudLink is empty %} class="active"{% endif %}>
+                    <a 
+                    href="#{{ field.propertyName ~ 'fileInput' }}" 
+                    role="tab" 
+                    data-toggle="tab" 
+                    >
+                        {{ _t('NEXTCLOUDCONNECTOR_FILE_INPUT') }}
+                    </a>
+                </li>
+                <li role="presentation"{% if nextcloudLink is not empty %} class="active"{% endif %}>
+                    <a 
+                    href="#{{ field.nextcloudConnectorPropertyName ~ 'fileInput' }}" 
+                    role="tab" 
+                    data-toggle="tab" 
+                    >
+                        {{ _t('NEXTCLOUDCONNECTOR_NEXTCLOUD_INPUT') }}
+                    </a>
+                </li>
+                <div class="tab-content">
+                    <div role="tabpanel" class="with-padding tab-pane{% if nextcloudLink is empty %} active{% endif %}" id="{{ field.propertyName ~ 'fileInput' }}">
+                        <input
+                            type="file"
+                            id="{{ field.propertyName }}"
+                            name="{{ field.propertyName }}"
+                            class="form-control"
+                            {% if field.required %}required{% endif %}
+                        />
+                    </div>
+                    <div role="tabpanel" class="with-padding tab-pane{% if nextcloudLink is not empty %} active{% endif %}" id="{{ field.nextcloudConnectorPropertyName ~ 'fileInput' }}">
+                        <div class="clearfix"></div>
+                        <div class="input-group">
+                            <input
+                                type="url"
+                                id="{{ field.nextcloudConnectorPropertyName }}"
+                                name="{{ field.nextcloudConnectorPropertyName }}"
+                                class="form-control input-xxlarge"
+                                placeholder="{{ _t('NEXTCLOUDCONNECTOR_NEXTCLOUD_URL_PLACEHOLDER') }}"
+                                {% if nextcloudLink is not empty %}value="{{ nextcloudLink }}"{% endif %}
+                                {% if field.required %}required{% endif %}
+                            />
+                            <select
+                                id="{{ field.nextcloudConnectorRefreshTimePropertyName }}"
+                                name="{{ field.nextcloudConnectorRefreshTimePropertyName }}"
+                                class="form-control"
+                                {% if field.required %}required{% endif %}
+                                data-default="3600"
+                            >
+                                <option value='' {% if refreshTime == 0 or refreshTime is empty %}selected="selected"{% endif %}>{{ _t('BAZ_CHOISIR') }}</option>
+                                <option value="60" {% if refreshTime == 60 %}selected{% endif %}>{{ _t('AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MINUTE') }}</option>
+                                <option value="1800" {% if refreshTime == 1800 %}selected{% endif %}>{{ _t('AB_NEXTCLOUDCONNECTOR_REFRESHTIME_HALF_AN_HOUR') }}</option>
+                                <option value="3600" {% if refreshTime == 3600 %}selected{% endif %}>{{ _t('AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_HOUR') }}</option>
+                                <option value="86400" {% if refreshTime == 86400 %}selected{% endif %}>{{ _t('AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_DAY') }}</option>
+                                <option value="2592000" {% if refreshTime == 2592000 %}selected{% endif %}>{{ _t('AB_NEXTCLOUDCONNECTOR_REFRESHTIME_ONE_MONTH') }}</option>
+                            </select>
+                            <div class="input-group-append">
+                                {{ _t('NEXTCLOUDCONNECTOR_NEXTCLOUD_REFRESH_TIME') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}
