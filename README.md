@@ -27,6 +27,21 @@ In page `GererMisesAJour` on your YesWiki website, search extension `Nextcloud C
 ### Usage
 
 Actions are available in button `components` when editing a page.
+ - **In a page or a field `textelong`** :
+   - edit page/entry
+   - click on button `Components` in concerned edit bar
+   - choose `Nextcloud connector`
+   - then choose action `nextcloudconnectorattach`
+   - fill what is needed by giving the link to the file which MUST be an INTERNAL LINK to concerned nextcloud server
+   - others parameters are the same as `{{attach}}` action's one
+ - **in field `fichier`  (file)** :
+   - go to the edit page for the concerned form
+   - if the field does not exist : add the field `File (local or nextcloud)` (others parameters are the same as standard `fichier` field's one)
+   - if the field already exists :
+     - go to the text mode edit page for the concerned form
+     - replace the beginning of the concerned line `fichier***` by `nextcloudconnectorfichier***`
+     - save in text mode
+     - change nothing to the fieldname to prevent invalisation of existing data for already created entries
 
 ### Warranty
 
@@ -56,7 +71,21 @@ Dans la page `GererMisesAJour` de votre YesWiki, recherchez l'extension `Nextclo
 
 ### Utilisation
 
-Des actions sont disponibles dans le bouton `Composants` lors de l'édition d'une page.
+ - **Dans une page ou un champ `textelong`** :
+   - éditer la page/la fiche
+   - cliquer sur le bouton `Composants` dans la barre d'édition concernée
+   - choisir `Nextcloud connector`
+   - puis choisir l'action `nextcloudconnectorattach`
+   - compléter ce qui est demandé en précisant bien le lien vers le fichier qui DOIT être le LIEN INTERNE du serveur nextcloud concerné
+   - les autres paramètres sont ceux de l'action `{{attach}}`
+ - **Dans un champ `fichier`** :
+   - se rendre dans la page de modification du formulaire concerné
+   - le champ n'existe pas encore : ajouter le champ `Fichier (local ou nextcloud)` (le reste est alors identique au champ `fichier` standard)
+   - le champ exsite déjà :
+     - se rendre sur la page d'édition du formulaire en mode texte
+     - remplacer le début de la ligne concernée `fichier***` par `nextcloudconnectorfichier***`
+     - sauvegarder
+     - ne rien changer au nom du champ pour éviter d'invalider les données existantes pour les fiches déjà créées
 
 ### Garantie
 
