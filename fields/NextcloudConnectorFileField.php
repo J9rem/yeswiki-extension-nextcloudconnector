@@ -83,7 +83,7 @@ class NextcloudConnectorFileField extends FileField
             unset($_FILES[$this->propertyName]);
             $data = $this->updateFile($entry);
             if (!empty($data['message'])) {
-                flash($data['message'], 'danger');
+                flash($data['message'], 'error');
                 $entry[$this->propertyName] = "";
             } else {
                 $entry[$this->propertyName] = $data['filename'];
