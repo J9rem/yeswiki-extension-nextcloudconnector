@@ -7,52 +7,25 @@
  * file that was distributed with this source code.
  */
 
-typeUserAttrs = {
-  ...typeUserAttrs,
-  ...{
-    nextcloudconnectorfichier: {
-      readlabel: {
-        label: _t('BAZ_FORM_EDIT_FILE_READLABEL_LABEL'), 
-        value: "",
-        placeholder: _t('BAZ_FILEFIELD_FILE')
-      },
-      maxsize: { label: _t('BAZ_FORM_EDIT_FILE_MAXSIZE_LABEL'), value: "" },
-      hint: { label: _t('BAZ_FORM_EDIT_HELP'), value: "" },
-      read: readConf,
-      write: writeconf,
-      semantic: semanticConf,
-    },
+(function(){
+  var field = getNextcloudConnectorField(readConf,writeconf,semanticConf,defaultMapping)
+  window.typeUserAttrs = {
+    ...window.typeUserAttrs,
+    ...{
+      [field.field.name]: field.attributes
+    }
   }
-};
-
-templates = {
-  ...templates,
-  ...{
-    nextcloudconnectorfichier: function (field) {
-      return { 
-        field: `<input type="file" name="${field.name}" class="form-control" value="" disabled/>` ,
-      };
-    },
+  window.templates = {
+    ...window.templates,
+    ...{
+      [field.field.name]: field.renderInput
+    }
   }
-};
-
-yesWikiMapping = {
-  ...yesWikiMapping,
-  ...{
-    nextcloudconnectorfichier: {
-      ...defaultMapping,
-      ...{
-        3: "maxsize",
-        6: "readlabel"
-      }
-    },
+  window.yesWikiMapping = {
+    ...window.yesWikiMapping,
+    ...{
+      [field.field.name]: field.attributesMapping
+    }
   }
-};
-
-fields.push({
-    label: _t('NEXTCLOUDCONNECTOR_FILE_FIELD'),
-    name: "nextcloudconnectorfichier",
-    attrs: { type: "nextcloudconnectorfichier" },
-    icon: '<i class="fas fa-upload"></i>',
-  });
-
+  window.fields.push(field.field)
+})()
