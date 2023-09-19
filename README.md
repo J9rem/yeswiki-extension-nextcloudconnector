@@ -11,7 +11,7 @@ Extension [YesWiki](https://yeswiki.net/) to synchronize files from Nextcloud
 
  - Jérémy Dufraisse
  - Elycoop
- - and all contributors indicated on this page : <https://github.com/YesWiki/yeswiki-extension-nextcloudconnector/graphs/contributors>
+ - and all contributors indicated on this page : <https://github.com/J9rem/yeswiki-extension-nextcloudconnector/graphs/contributors>
 
 ### Install
 
@@ -25,7 +25,7 @@ In page `GererMisesAJour` on your YesWiki website, search extension `Nextcloud C
  4. Note furnihsed username and password
  5. Go on your `YesWiki` website on page `GererConfig` and put connection data in part `Nextcloud connector`
 
-### [Usage](https://github.com/YesWiki/yeswiki-extension-nextcloudconnector/blob/master/docs/en/README.md)
+### [Usage](https://github.com/J9rem/yeswiki-extension-nextcloudconnector/blob/j9rem/docs/en/README.md)
 
 Actions are available in button `components` when editing a page.
  - **In a page or a field `textelong`** :
@@ -57,7 +57,7 @@ Extension [YesWiki](https://yeswiki.net/) pour synchroniser des fichiers depuis 
 
  - Jérémy Dufraisse
  - Elycoop
- - et tous les contributeurs et toutes les contributrices indiqués sur cette page : <https://github.com/YesWiki/yeswiki-extension-nextcloudconnector/graphs/contributors>
+ - et tous les contributeurs et toutes les contributrices indiqués sur cette page : <https://github.com/J9rem/yeswiki-extension-nextcloudconnector/graphs/contributors>
 
 ### Installation
 
@@ -71,7 +71,7 @@ Dans la page `GererMisesAJour` de votre YesWiki, recherchez l'extension `Nextclo
  4. Noter l'identifiant et le mot de passe fourni
  5. Se rendre sur votre `YesWiki` sur la page `GererConfig` et entrer les informations de connexions dans la partie `Nextcloud connector`
 
-### [Utilisation](https://github.com/YesWiki/yeswiki-extension-nextcloudconnector/blob/master/docs/fr/README.md)
+### [Utilisation](https://github.com/J9rem/yeswiki-extension-nextcloudconnector/blob/j9rem/docs/fr/README.md)
 
  - **Dans une page ou un champ `textelong`** :
    - éditer la page/la fiche
