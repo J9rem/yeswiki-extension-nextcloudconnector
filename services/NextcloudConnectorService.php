@@ -11,9 +11,6 @@
 
 namespace YesWiki\Nextcloudconnector\Service;
 
-use attach;
-use DateInterval;
-use DateTime;
 use Sabre\DAV\Client as SabreDavClient;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Nextcloudconnector\Exception\NextcloudException;
@@ -21,13 +18,13 @@ use YesWiki\Wiki;
 
 class NextcloudConnectorService
 {
-    private const CACHE_FOLDER = "cache";
-    private const CACHE_PREFIX = "fileinfo-";
+    private const CACHE_FOLDER = 'cache';
+    private const CACHE_PREFIX = 'fileinfo-';
 
     protected $attach;
     protected $nextcloudparams;
-    protected $servername ;
-    protected $wiki ;
+    protected $servername;
+    protected $wiki;
 
     public function __construct(
         ParameterBagInterface $params,
@@ -37,16 +34,17 @@ class NextcloudConnectorService
         $this->wiki = $wiki;
         $this->nextcloudparams = $params->get('nextcloudconnector');
         $this->servername = isset($this->nextcloudparams['servername']) ? $this->nextcloudparams['servername'] . (
-            substr($this->nextcloudparams['servername'], -1) != "/"
-            ? "/"
-            : ""
+            substr($this->nextcloudparams['servername'], -1) != '/'
+            ? '/'
+            : ''
         ) : '';
     }
 
     /**
-     * retrieve file id from url
-     * @param string $fileurl
+     * retrieve file id from url.
+     *
      * @return string $fileId
+     *
      * @throws NextcloudException
      */
     public function getIdFromUrl(string $fileurl): string
@@ -54,24 +52,25 @@ class NextcloudConnectorService
         if (empty($this->servername) || !filter_var($this->servername, FILTER_VALIDATE_URL)) {
             throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_BAD_SERVERNAME_CONFIG'));
         }
-        $pregQuotedServerName = preg_quote($this->servername, "/");
-        $quotedSlash = preg_quote("/", "/");
+        $pregQuotedServerName = preg_quote($this->servername, '/');
+        $quotedSlash = preg_quote('/', '/');
         if (!preg_match("/^{$pregQuotedServerName}(?:f$quotedSlash|apps{$quotedSlash}onlyoffice$quotedSlash|apps{$quotedSlash}files{$quotedSlash}\?dir=[^&]+&openfile=)([0-9]+)/", $fileurl, $matches)) {
             throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_BAD_FILEURL'));
         }
+
         return $matches[1];
     }
 
     /**
-     * retrieve filename form id using cache
-     * @param string $fileId
-     * @param bool $forced
+     * retrieve filename form id using cache.
+     *
      * @return array $fData ['filename'=>$filename,'dirname'=>$dirname,'fileId'=>$fileId]
+     *
      * @throws NextcloudException
      */
     public function getFilenameFromId(string $fileId, bool $forced = false): array
     {
-        $cachefilename = self::CACHE_FOLDER . "/" . self::CACHE_PREFIX . "{$this->sanitizeFileName($this->servername)}-$fileId.json";
+        $cachefilename = self::CACHE_FOLDER . '/' . self::CACHE_PREFIX . "{$this->sanitizeFileName($this->servername)}-$fileId.json";
         if (!$forced && file_exists($cachefilename)) {
             $fileinfo = json_decode(file_get_contents($cachefilename), true);
             $filename = $fileinfo['filename'] ?? '';
@@ -97,29 +96,29 @@ class NextcloudConnectorService
             $lines = explode("\n", $content);
             $location = '';
             foreach ($lines as $line) {
-                if (substr($line, 0, strlen("Location: ")) == "Location: ") {
-                    $location = substr($line, strlen("Location: "));
+                if (substr($line, 0, strlen('Location: ')) == 'Location: ') {
+                    $location = substr($line, strlen('Location: '));
                 }
             }
             if (!preg_match("/^\/apps\/files\/\?dir=([^&]+)(?:&openfile=$fileId)?&scrollto=([^&]+)(?:&openfile=$fileId)?\s*$/", $location, $matches)) {
                 throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId' => "$fileId"]));
             }
-            $filename = urldecode(preg_replace("/\s*$/", "", $matches[2]));
+            $filename = urldecode(preg_replace("/\s*$/", '', $matches[2]));
             $dirname = urldecode($matches[1]);
-            file_put_contents($cachefilename, json_encode(['filename' => $filename,'dirname' => $dirname]));
+            file_put_contents($cachefilename, json_encode(['filename' => $filename, 'dirname' => $dirname]));
         }
         if (empty($filename) || empty($dirname)) {
             throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId' => $fileId]));
         }
-        return ['filename' => $filename,'dirname' => $dirname,'fileId' => $fileId];
+
+        return ['filename' => $filename, 'dirname' => $dirname, 'fileId' => $fileId];
     }
 
     /**
-     * updateFileIfNeeded
-     * @param array $fData
-     * @param int $maxAge
-     * @param bool $alreadyForced
+     * updateFileIfNeeded.
+     *
      * @return string $fullFileName
+     *
      * @throws NextcloudException
      */
     public function updateFileIfNeeded(array $fData, int $maxAge, bool $alreadyForced = false): string
@@ -131,21 +130,21 @@ class NextcloudConnectorService
 
         foreach ($files as $key => $filedata) {
             if (!empty($filedata['name']) && !empty($filedata['ext']) && $attach->sanitizeFilename("{$filedata['name']}.{$filedata['ext']}") == $attach->sanitizeFilename($fData['filename'])) {
-                if (empty($filedata['dateupload']) ||
-                    (new DateTime($filedata['dateupload']))
-                    ->add(new DateInterval("PT{$maxAge}S"))
-                    ->diff(new DateTime())
+                if (empty($filedata['dateupload'])
+                    || (new \DateTime($filedata['dateupload']))
+                    ->add(new \DateInterval("PT{$maxAge}S"))
+                    ->diff(new \DateTime())
                     ->invert == 0
                 ) {
                     $attach->fmDelete($filedata['realname']);
                     $updatedFiles = $attach->fmGetFiles(true);
                     foreach ($updatedFiles as $newFData) {
                         if (
-                            !empty($newFData['name']) &&
-                            !empty($newFData['ext']) &&
-                            $newFData['name'] == $filedata['name'] &&
-                            $newFData['ext'] == $filedata['ext'] &&
-                            !empty($newFData['trashdate'])) {
+                            !empty($newFData['name'])
+                            && !empty($newFData['ext'])
+                            && $newFData['name'] == $filedata['name']
+                            && $newFData['ext'] == $filedata['ext']
+                            && !empty($newFData['trashdate'])) {
                             if (file_exists("files/{$newFData['realname']}")) {
                                 unlink("files/{$newFData['realname']}");
                             }
@@ -180,8 +179,10 @@ class NextcloudConnectorService
                 $fullFileName = $attach->GetFullFilename(true);
                 file_put_contents($fullFileName, $fileContent);
             }
-            return preg_replace("/^" . preg_quote($attach->GetUploadPath(), "/") . "\//", "", $fullFileName);
+
+            return preg_replace('/^' . preg_quote($attach->GetUploadPath(), '/') . "\//", '', $fullFileName);
         }
+
         return $foundFiles[0]['realname'];
     }
 
@@ -191,17 +192,17 @@ class NextcloudConnectorService
     private function getSabreWebDavClient(): SabreDavClient
     {
         $url = "{$this->servername}remote.php/dav";
+
         return new SabreDavClient([
             'baseUri' => $url,
             'userName' => $this->nextcloudparams['username'] ?? '',
-            'password' => $this->nextcloudparams['applicationPassword'] ?? ''
+            'password' => $this->nextcloudparams['applicationPassword'] ?? '',
         ]);
     }
 
-
     /**
-     * sanitize file name
-     * @param string $inputString
+     * sanitize file name.
+     *
      * @return string $outputString
      */
     private function sanitizeFileName(string $inputString): string
@@ -209,15 +210,16 @@ class NextcloudConnectorService
         return removeAccents(preg_replace('/--+/u', '-', preg_replace('/[[:punct:]]/', '-', $inputString)));
     }
 
-    protected function getAttach(): attach
+    protected function getAttach(): \attach
     {
         if (is_null($this->attach)) {
             if (!class_exists('attach')) {
-                include('tools/attach/libs/attach.lib.php');
+                include 'tools/attach/libs/attach.lib.php';
             }
 
-            $this->attach = new attach($this->wiki);
+            $this->attach = new \attach($this->wiki);
         }
+
         return $this->attach;
     }
 }
