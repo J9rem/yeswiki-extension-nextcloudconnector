@@ -11,7 +11,6 @@
 
 namespace YesWiki\Nextcloudconnector\Service;
 
-use Sabre\DAV\Client as SabreDavClient;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use YesWiki\Nextcloudconnector\Exception\NextcloudException;
 use YesWiki\Wiki;
@@ -54,7 +53,7 @@ class NextcloudConnectorService
         }
         $pregQuotedServerName = preg_quote($this->servername, '/');
         $quotedSlash = preg_quote('/', '/');
-        if (!preg_match("/^{$pregQuotedServerName}(?:f$quotedSlash|apps{$quotedSlash}onlyoffice$quotedSlash|apps{$quotedSlash}files{$quotedSlash}\?dir=[^&]+&openfile=)([0-9]+)/", $fileurl, $matches)) {
+        if (!preg_match("/^{$pregQuotedServerName}(?:f$quotedSlash|apps{$quotedSlash}onlyoffice$quotedSlash|apps{$quotedSlash}files{$quotedSlash}(?:files{$quotedSlash})?\?dir=[^&]+&openfile=)([0-9]+)/", $fileurl, $matches)) {
             throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_BAD_FILEURL'));
         }
 
@@ -77,34 +76,27 @@ class NextcloudConnectorService
             $dirname = $fileinfo['dirname'] ?? '';
         }
         if (empty($filename) || empty($dirname)) {
-            $url = "{$this->servername}f/$fileId";
+            $lines = $this->extractHeaders(
+                "{$this->servername}f/$fileId",
+                $this->nextcloudparams['username'] ?? '',
+                $this->nextcloudparams['applicationPassword'] ?? ''
+            );
 
-            $fp_tmp = tmpfile();
-            $fp_fullpath = stream_get_meta_data($fp_tmp)['uri'];
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_USERNAME, $this->nextcloudparams['username'] ?? '');
-            curl_setopt($ch, CURLOPT_PASSWORD, $this->nextcloudparams['applicationPassword'] ?? '');
-            curl_setopt($ch, CURLOPT_FILE, $fp_tmp);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-            curl_exec($ch);
-            curl_close($ch);
-            $content = file_get_contents($fp_fullpath);
-            fclose($fp_tmp);
+            $location = $this->getLocationFromHeaders($lines);
 
-            $lines = explode("\n", $content);
-            $location = '';
-            foreach ($lines as $line) {
-                if (substr($line, 0, strlen('Location: ')) == 'Location: ') {
-                    $location = substr($line, strlen('Location: '));
+            $matches = [];
+            if (preg_match("/^\/apps\/files\/\?dir=([^&]+)(?:&openfile=$fileId)?&scrollto=([^&]+)(?:&openfile=$fileId)?\s*$/", $location, $matches)) {
+                $filename = urldecode(preg_replace("/\s*$/", '', $matches[2]));
+                $dirname = trim(urldecode($matches[1]));
+            } else {
+                $matches = [];
+                if (preg_match("/^.*(?:\?|&)dir=([^&]+).*$/", $location, $matches)) {
+                    $dirname = trim(urldecode($matches[1]));
+                    $filename = $this->getFileNameInFolderFromFileId($dirname, $fileId);
+                } else {
+                    throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId' => "$fileId"]));
                 }
             }
-            if (!preg_match("/^\/apps\/files\/\?dir=([^&]+)(?:&openfile=$fileId)?&scrollto=([^&]+)(?:&openfile=$fileId)?\s*$/", $location, $matches)) {
-                throw new NextcloudException(_t('NEXTCLOUDCONNECTOR_NOT_POSSIBLE_FIND_FILEINFO', ['fileId' => "$fileId"]));
-            }
-            $filename = urldecode(preg_replace("/\s*$/", '', $matches[2]));
-            $dirname = urldecode($matches[1]);
             file_put_contents($cachefilename, json_encode(['filename' => $filename, 'dirname' => $dirname]));
         }
         if (empty($filename) || empty($dirname)) {
@@ -112,6 +104,77 @@ class NextcloudConnectorService
         }
 
         return ['filename' => $filename, 'dirname' => $dirname, 'fileId' => $fileId];
+    }
+
+    /**
+     * get fileName infolder from fileId.
+     *
+     * @return string $fileName
+     */
+    protected function getFileNameInFolderFromFileId(
+        string $folderName,
+        string $fileId
+    ): string {
+        $url = "{$this->servername}remote.php/dav/files/{$this->nextcloudparams['username']}$folderName";
+
+        $sabreWebDavClient = $this->getSabreWebDavClient();
+        $depth = 1;
+        $data = $sabreWebDavClient->propFind($url, ['{DAV:}displayname', '{oc:}fileid'], $depth);
+        if (is_array($data)) {
+            foreach ($data as $remoteUrl => $fileInfo) {
+                if (!empty($fileInfo['{DAV:}displayname'])
+                    && !empty($fileInfo['{http://owncloud.org/ns}fileid'])
+                    && $fileId === $fileInfo['{http://owncloud.org/ns}fileid']) {
+                    return $fileInfo['{DAV:}displayname'];
+                }
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * extract header of url via curl.
+     *
+     * @return array $lines
+     */
+    protected function extractHeaders(
+        string $url,
+        string $username,
+        string $password
+    ): array {
+        $fp_tmp = tmpfile();
+        $fp_fullpath = stream_get_meta_data($fp_tmp)['uri'];
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_USERNAME, $username);
+        curl_setopt($ch, CURLOPT_PASSWORD, $password);
+        curl_setopt($ch, CURLOPT_FILE, $fp_tmp);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_exec($ch);
+        curl_close($ch);
+        $content = file_get_contents($fp_fullpath);
+        fclose($fp_tmp);
+
+        return explode("\n", $content);
+    }
+
+    /**
+     * get Location from headers.
+     *
+     * @return string $location
+     */
+    protected function getLocationFromHeaders(array $lines): string
+    {
+        $location = '';
+        foreach ($lines as $line) {
+            if (substr($line, 0, strlen('Location: ')) == 'Location: ') {
+                $location = substr($line, strlen('Location: '));
+            }
+        }
+
+        return $location;
     }
 
     /**
@@ -126,35 +189,8 @@ class NextcloudConnectorService
         $attach = $this->getAttach();
         $files = $attach->fmGetFiles(false);
 
-        $foundFiles = [];
+        $foundFiles = $this->extractFiles($files, $attach, $fData, $maxAge);
 
-        foreach ($files as $key => $filedata) {
-            if (!empty($filedata['name']) && !empty($filedata['ext']) && $attach->sanitizeFilename("{$filedata['name']}.{$filedata['ext']}") == $attach->sanitizeFilename($fData['filename'])) {
-                if (empty($filedata['dateupload'])
-                    || (new \DateTime($filedata['dateupload']))
-                    ->add(new \DateInterval("PT{$maxAge}S"))
-                    ->diff(new \DateTime())
-                    ->invert == 0
-                ) {
-                    $attach->fmDelete($filedata['realname']);
-                    $updatedFiles = $attach->fmGetFiles(true);
-                    foreach ($updatedFiles as $newFData) {
-                        if (
-                            !empty($newFData['name'])
-                            && !empty($newFData['ext'])
-                            && $newFData['name'] == $filedata['name']
-                            && $newFData['ext'] == $filedata['ext']
-                            && !empty($newFData['trashdate'])) {
-                            if (file_exists("files/{$newFData['realname']}")) {
-                                unlink("files/{$newFData['realname']}");
-                            }
-                        }
-                    }
-                } else {
-                    $foundFiles[] = $filedata;
-                }
-            }
-        }
         if (empty($foundFiles)) {
             $sabreWebDavClient = $this->getSabreWebDavClient();
             $fileUrl = "{$this->servername}remote.php/dav/files/{$this->nextcloudparams['username']}{$fData['dirname']}/{$fData['filename']}";
@@ -184,6 +220,49 @@ class NextcloudConnectorService
         }
 
         return $foundFiles[0]['realname'];
+    }
+
+    /**
+     * extrat files from files data.
+     *
+     * @return array $files
+     */
+    protected function extractFiles(array $filesData, \attach $attach, array $fData, int $maxAge): array
+    {
+        $foundFiles = [];
+        foreach ($filesData as $key => $filedata) {
+            if (
+                !empty($filedata['name'])
+                && !empty($filedata['ext'])
+                && $attach->sanitizeFilename("{$filedata['name']}.{$filedata['ext']}") == $attach->sanitizeFilename($fData['filename'])
+            ) {
+                if (empty($filedata['dateupload'])
+                    || (new \DateTime($filedata['dateupload']))
+                    ->add(new \DateInterval("PT{$maxAge}S"))
+                    ->diff(new \DateTime())
+                    ->invert == 0
+                ) {
+                    $attach->fmDelete($filedata['realname']);
+                    $updatedFiles = $attach->fmGetFiles(true);
+                    foreach ($updatedFiles as $newFData) {
+                        if (
+                            !empty($newFData['name'])
+                            && !empty($newFData['ext'])
+                            && $newFData['name'] == $filedata['name']
+                            && $newFData['ext'] == $filedata['ext']
+                            && !empty($newFData['trashdate'])) {
+                            if (file_exists("files/{$newFData['realname']}")) {
+                                unlink("files/{$newFData['realname']}");
+                            }
+                        }
+                    }
+                } else {
+                    $foundFiles[] = $filedata;
+                }
+            }
+        }
+
+        return $foundFiles;
     }
 
     /**
