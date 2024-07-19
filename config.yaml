@@ -5,15 +5,15 @@
 parameters:
   # parameters to connect to nextcloud instance
   nextcloudconnector:
-    servername: ''
-    username: ''
-    applicationPassword: ''
+    servername: ""
+    username: ""
+    applicationPassword: ""
   # for edit config action
   nextcloudconnector_editable_config_params:
     - nextcloudconnector:
-      - servername
-      - username
-      - applicationPassword
+        - servername
+        - username
+        - applicationPassword
 
 services:
   _defaults:
@@ -21,4 +21,6 @@ services:
     public: true
 
   YesWiki\Nextcloudconnector\Service\:
-    resource: 'services/*'
+    resource: "services/*"
+    exclude:
+      - "services/SabreDavClient.php"
