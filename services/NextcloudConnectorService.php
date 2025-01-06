@@ -193,7 +193,12 @@ class NextcloudConnectorService
 
         if (empty($foundFiles)) {
             $sabreWebDavClient = $this->getSabreWebDavClient();
-            $fileUrl = "{$this->servername}remote.php/dav/files/{$this->nextcloudparams['username']}{$fData['dirname']}/{$fData['filename']}";
+            $fileUrl = "{$this->servername}remote.php/dav/files/"
+                // use `rawurlencode` to convert space as %20
+                . rawurlencode($this->nextcloudparams['username'])
+                . $fData['dirname']
+                . '/'
+                . rawurlencode($fData['filename']);
             // request($method, $url = '', $body = null, array $headers = [])
             $fileResponse = $sabreWebDavClient->request('GET', $fileUrl);
             if (empty($fileResponse['body']) || empty($fileResponse['statusCode']) || $fileResponse['statusCode'] != 200) {
